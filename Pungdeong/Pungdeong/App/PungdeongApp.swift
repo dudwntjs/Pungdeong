@@ -11,7 +11,7 @@ import SwiftUI
 struct PungdeongApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            RecordView()
         }
     }
 }

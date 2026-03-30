@@ -11,17 +11,7 @@ import SwiftUI
 struct PungdeongApp: App {
     var body: some Scene {
         WindowGroup {
-            CalendarView(
-                viewModel: CalendarViewModel(
-                    getCalendarDaysUseCase: DefaultGetCalendarDaysUseCase(
-                        repository: DefaultCalendarRepository()
-                    ),
-                    moveMonthUseCase: DefaultMoveMonthUseCase(),
-                    formatCalendarHeaderUseCase: DefaultFormatCalendarHeaderUseCase(
-                        repository: DefaultCalendarRepository()
-                    )
-                )
-            )
+            MainTabView()
         }
     }
 }

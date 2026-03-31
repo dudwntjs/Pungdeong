@@ -18,11 +18,11 @@ protocol GetCalendarDaysUseCase {
 
 final class DefaultGetCalendarDaysUseCase: GetCalendarDaysUseCase {
     private let repository: CalendarRepository
-
+    
     init(repository: CalendarRepository) {
         self.repository = repository
     }
-
+    
     func execute(
         baseDate: Date,
         offset: Int,
@@ -31,12 +31,12 @@ final class DefaultGetCalendarDaysUseCase: GetCalendarDaysUseCase {
     ) -> [CalendarDay] {
         let monthDate = repository.makeMonthDate(from: baseDate, offset: offset)
         let dates = repository.fetchMonthDates(for: monthDate)
-
+        
         guard let firstDate = dates.first else { return [] }
-
+        
         let firstWeekday = repository.firstWeekday(for: firstDate)
         let placeholderCount = max(0, firstWeekday - 1)
-
+        
         let placeholders = Array(
             repeating: CalendarDay(
                 number: nil,
@@ -49,10 +49,10 @@ final class DefaultGetCalendarDaysUseCase: GetCalendarDaysUseCase {
             ),
             count: placeholderCount
         )
-
+        
         let realDays = dates.map { date in
             let weekday = repository.weekday(for: date)
-
+            
             return CalendarDay(
                 number: repository.dayNumber(for: date),
                 date: date,
@@ -63,7 +63,24 @@ final class DefaultGetCalendarDaysUseCase: GetCalendarDaysUseCase {
                 level: levelProvider(date)
             )
         }
-
-        return placeholders + realDays
+        
+        var calendarDays = placeholders + realDays
+        
+        while calendarDays.count < 42 {
+            calendarDays.append(
+                CalendarDay(
+                    number: nil,
+                    date: nil,
+                    isToday: false,
+                    isSunday: false,
+                    isSaturday: false,
+                    isSelected: false,
+                    level: nil
+                )
+            )
+        }
+        
+        return calendarDays
     }
 }
+

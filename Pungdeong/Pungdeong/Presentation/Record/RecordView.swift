@@ -9,15 +9,18 @@ import SwiftUI
 
 struct RecordView: View {
     @StateObject private var viewModel: RecordViewModel
-
+    
     init(viewModel: RecordViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
     }
-
+    
     var body: some View {
         VStack(spacing: 20) {
-            headerView
-
+            
+            PungdeongHeaderView(
+                title: "그날의 풍덩",
+                subtitle: "사진과 함께 얼마나 풍덩했는지 기록해보세요"
+            )
             TabView(selection: $viewModel.selectedIndex) {
                 ForEach(Array(viewModel.records.enumerated()), id: \.element.id) { index, record in
                     RecordCardView(
@@ -37,23 +40,12 @@ struct RecordView: View {
                 }
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
-
+            
             pageIndicator
         }
         .padding(.top, 16)
     }
-
-    private var headerView: some View {
-        VStack(spacing: 6) {
-            Text("그날의 풍덩")
-                .font(.title2.bold())
-
-            Text("사진과 함께 얼마나 풍덩했는지 기록해보세요")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-        }
-    }
-
+    
     private var pageIndicator: some View {
         HStack(spacing: 8) {
             ForEach(0..<viewModel.records.count, id: \.self) { index in
@@ -76,3 +68,4 @@ struct RecordView: View {
         )
     )
 }
+

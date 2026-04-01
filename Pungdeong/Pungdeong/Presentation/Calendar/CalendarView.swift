@@ -9,15 +9,18 @@ import SwiftUI
 
 struct CalendarView: View {
     @StateObject private var viewModel: CalendarViewModel
-
+    
     init(viewModel: CalendarViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
     }
-
+    
     var body: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 40) {
             
-            headerView
+            PungdeongHeaderView(
+                title: "이달의 풍덩",
+                subtitle: "그날 얼마나 풍덩했는지 남겨보세요"
+            )
             
             VStack(spacing: 30) {
                 CalendarHeaderView(
@@ -26,14 +29,16 @@ struct CalendarView: View {
                     onTapPrevious: viewModel.tapPreviousMonth,
                     onTapNext: viewModel.tapNextMonth
                 )
-
+                
                 WeekdayHeaderView()
             }
-
+            
             CalendarGridView(
                 days: viewModel.days,
                 onTapDate: viewModel.select
             )
+            .frame(maxWidth: .infinity)
+            .frame(height: 500)
         }
         .padding(.horizontal, 20)
         .padding(.top, 16)
@@ -47,7 +52,7 @@ struct CalendarView: View {
                         .onTapGesture {
                             viewModel.closeMonthPicker()
                         }
-
+                    
                     MonthYearPickerView(
                         initialYear: viewModel.displayedYear,
                         initialMonth: viewModel.displayedMonth,
@@ -66,23 +71,13 @@ struct CalendarView: View {
                 onSelectLevel: viewModel.savePungdeong
             )
         }
-    }
-    
-    private var headerView: some View {
-        VStack(spacing: 6) {
-            Text("이달의 풍덩")
-                .font(.title2.bold())
-            
-            Text("그날 얼마나 풍덩했는지 남겨보세요")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
 }
 
 #Preview {
     let repository = DefaultCalendarRepository()
-
+    
     let viewModel = CalendarViewModel(
         getCalendarDaysUseCase: DefaultGetCalendarDaysUseCase(
             repository: repository
@@ -92,6 +87,7 @@ struct CalendarView: View {
             repository: repository
         )
     )
-
+    
     return CalendarView(viewModel: viewModel)
 }
+

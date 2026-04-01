@@ -15,7 +15,10 @@ struct CalendarView: View {
     }
 
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 20) {
+            
+            headerView
+            
             VStack(spacing: 30) {
                 CalendarHeaderView(
                     title: viewModel.headerTitle,
@@ -62,6 +65,17 @@ struct CalendarView: View {
                 selectedDate: viewModel.selectedDate,
                 onSelectLevel: viewModel.savePungdeong
             )
+        }
+    }
+    
+    private var headerView: some View {
+        VStack(spacing: 6) {
+            Text("이달의 풍덩")
+                .font(.title2.bold())
+            
+            Text("그날 얼마나 풍덩했는지 남겨보세요")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
         }
     }
 }

@@ -16,10 +16,8 @@ struct CalendarDay: Identifiable, Equatable {
     let isSaturday: Bool
     let isSelected: Bool
     let level: PungdeongLevel?
-
-    var isPlaceholder: Bool {
-        number == nil || date == nil
-    }
+    let isPlaceholder: Bool
+    let isFiller: Bool
 
     var progress: Double {
         level?.progress ?? 0

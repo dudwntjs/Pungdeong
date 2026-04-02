@@ -38,7 +38,6 @@ struct CalendarView: View {
                 onTapDate: viewModel.select
             )
             .frame(maxWidth: .infinity)
-            .frame(height: 500)
         }
         .padding(.horizontal, 20)
         .padding(.top, 16)
@@ -49,6 +48,7 @@ struct CalendarView: View {
                         .fill(.clear)
                         .contentShape(Rectangle())
                         .ignoresSafeArea()
+                     
                         .onTapGesture {
                             viewModel.closeMonthPicker()
                         }
@@ -73,21 +73,5 @@ struct CalendarView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
-}
-
-#Preview {
-    let repository = DefaultCalendarRepository()
-    
-    let viewModel = CalendarViewModel(
-        getCalendarDaysUseCase: DefaultGetCalendarDaysUseCase(
-            repository: repository
-        ),
-        moveMonthUseCase: DefaultMoveMonthUseCase(),
-        formatCalendarHeaderUseCase: DefaultFormatCalendarHeaderUseCase(
-            repository: repository
-        )
-    )
-    
-    return CalendarView(viewModel: viewModel)
 }
 

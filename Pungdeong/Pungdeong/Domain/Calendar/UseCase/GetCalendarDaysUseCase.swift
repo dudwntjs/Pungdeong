@@ -18,11 +18,12 @@ protocol GetCalendarDaysUseCase {
 
 final class DefaultGetCalendarDaysUseCase: GetCalendarDaysUseCase {
     private let repository: CalendarRepository
-    
+    private let calendar = Calendar.current
+
     init(repository: CalendarRepository) {
         self.repository = repository
     }
-    
+
     func execute(
         baseDate: Date,
         offset: Int,
@@ -31,56 +32,99 @@ final class DefaultGetCalendarDaysUseCase: GetCalendarDaysUseCase {
     ) -> [CalendarDay] {
         let monthDate = repository.makeMonthDate(from: baseDate, offset: offset)
         let dates = repository.fetchMonthDates(for: monthDate)
-        
-        guard let firstDate = dates.first else { return [] }
-        
+
+        guard
+            let firstDate = dates.first,
+            let lastDate = dates.last
+        else {
+            return []
+        }
+
+        let normalizedSelectedDate = selectedDate.map { calendar.startOfDay(for: $0) }
+
         let firstWeekday = repository.firstWeekday(for: firstDate)
         let placeholderCount = max(0, firstWeekday - 1)
-        
-        let placeholders = Array(
-            repeating: CalendarDay(
-                number: nil,
-                date: nil,
-                isToday: false,
-                isSunday: false,
-                isSaturday: false,
-                isSelected: false,
-                level: nil
-            ),
-            count: placeholderCount
-        )
-        
-        let realDays = dates.map { date in
+
+        let leadingPlaceholders: [CalendarDay] = (0..<placeholderCount).compactMap { index in
+            let daysToSubtract = placeholderCount - index
+
+            guard let rawDate = calendar.date(byAdding: .day, value: -daysToSubtract, to: firstDate) else {
+                return nil
+            }
+
+            let date = calendar.startOfDay(for: rawDate)
             let weekday = repository.weekday(for: date)
-            
+
             return CalendarDay(
                 number: repository.dayNumber(for: date),
                 date: date,
                 isToday: repository.isToday(date),
                 isSunday: weekday == 1,
                 isSaturday: weekday == 7,
-                isSelected: selectedDate.map { repository.isSameDay($0, date) } ?? false,
-                level: levelProvider(date)
+                isSelected: normalizedSelectedDate.map { repository.isSameDay($0, date) } ?? false,
+                level: nil,
+                isPlaceholder: true,
+                isFiller: false
             )
         }
-        
-        var calendarDays = placeholders + realDays
-        
-        while calendarDays.count < 42 {
-            calendarDays.append(
-                CalendarDay(
-                    number: nil,
-                    date: nil,
-                    isToday: false,
-                    isSunday: false,
-                    isSaturday: false,
-                    isSelected: false,
-                    level: nil
-                )
+
+        let realDays: [CalendarDay] = dates.map { rawDate in
+            let date = calendar.startOfDay(for: rawDate)
+            let weekday = repository.weekday(for: date)
+
+            return CalendarDay(
+                number: repository.dayNumber(for: date),
+                date: date,
+                isToday: repository.isToday(date),
+                isSunday: weekday == 1,
+                isSaturday: weekday == 7,
+                isSelected: normalizedSelectedDate.map { repository.isSameDay($0, date) } ?? false,
+                level: levelProvider(date),
+                isPlaceholder: false,
+                isFiller: false
             )
         }
-        
-        return calendarDays
+
+        let currentCount = leadingPlaceholders.count + realDays.count
+        let visibleTrailingCount = currentCount % 7 == 0 ? 0 : 7 - (currentCount % 7)
+
+        let trailingPlaceholders: [CalendarDay] = (0..<visibleTrailingCount).compactMap { index in
+            guard let rawDate = calendar.date(byAdding: .day, value: index + 1, to: lastDate) else {
+                return nil
+            }
+
+            let date = calendar.startOfDay(for: rawDate)
+            let weekday = repository.weekday(for: date)
+
+            return CalendarDay(
+                number: repository.dayNumber(for: date),
+                date: date,
+                isToday: repository.isToday(date),
+                isSunday: weekday == 1,
+                isSaturday: weekday == 7,
+                isSelected: normalizedSelectedDate.map { repository.isSameDay($0, date) } ?? false,
+                level: nil,
+                isPlaceholder: true,
+                isFiller: false
+            )
+        }
+
+        let fillerCount = max(0, 42 - (currentCount + trailingPlaceholders.count))
+
+        let fillers: [CalendarDay] = (0..<fillerCount).map { _ in
+            CalendarDay(
+                number: nil,
+                date: nil,
+                isToday: false,
+                isSunday: false,
+                isSaturday: false,
+                isSelected: false,
+                level: nil,
+                isPlaceholder: false,
+                isFiller: true
+            )
+        }
+
+        return leadingPlaceholders + realDays + trailingPlaceholders + fillers
     }
 }
-

@@ -49,7 +49,7 @@ struct CalendarDateCellView: View {
     }
 
     private var textColor: Color {
-        if day.isPlaceholder { return .clear }
+        if day.isPlaceholder { return .gray }
         if day.isSunday { return .red }
         if day.isSaturday { return .blue }
         return .black

@@ -13,57 +13,40 @@ struct RecordCardView: View {
     @Binding var record: DailyRecord
     let onSelectLevel: (PungdeongLevel) -> Void
     let onMemoChange: (String) -> Void
-    let onSave: () -> Void
     
     var body: some View {
-        VStack(spacing: 0) {
-            
-            ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 24) {
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(title)
+                        .font(.title3.bold())
                     
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(title)
-                            .font(.title3.bold())
-                        
-                        Text(dateText)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                    }
-                    
-                    RecordLevelSection(
-                        selectedLevel: record.level,
-                        onSelectLevel: onSelectLevel
-                    )
-                    
-                    Text("그날의 풍덩 장소")
-                        .font(.headline)
-                    
-                    RecordMapView()
-                        .frame(height: 250)
-                        .clipShape(RoundedRectangle(cornerRadius: 20))
-                    
-                    RecordPhotoPickerSection(images: $record.images)
-                    
-                    RecordMemoSection(
-                        memo: record.memo,
-                        onMemoChange: onMemoChange
-                    )
+                    Text(dateText)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
                 }
-                .padding(20)
-            }
-            
-            Button(action: onSave) {
-                Text("저장하기")
+                
+                RecordLevelSection(
+                    selectedLevel: record.level,
+                    onSelectLevel: onSelectLevel
+                )
+                
+                Text("그날의 풍덩 장소")
                     .font(.headline)
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.blue)
+                
+                RecordMapView()
+                    .frame(height: 250)
                     .clipShape(RoundedRectangle(cornerRadius: 20))
+                
+                RecordPhotoPickerSection(images: $record.images)
+                
+                RecordMemoSection(
+                    memo: record.memo,
+                    onMemoChange: onMemoChange
+                )
             }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 12)
-            .background(Color.white)
+            .padding(20)
         }
         .background(
             RoundedRectangle(cornerRadius: 20)

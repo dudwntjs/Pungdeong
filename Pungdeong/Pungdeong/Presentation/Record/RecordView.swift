@@ -15,7 +15,7 @@ struct RecordView: View {
     }
     
     var body: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 16) {
             PungdeongHeaderView(
                 title: "그날의 풍덩",
                 subtitle: "사진과 함께 얼마나 풍덩했는지 기록해보세요"
@@ -32,19 +32,31 @@ struct RecordView: View {
                         },
                         onMemoChange: { memo in
                             viewModel.updateMemo(memo, at: index)
-                        },
-                        onSave: {
-                            print("저장 tapped: \(index)")
                         }
                     )
                     .tag(index)
                     .padding(.horizontal, 20)
-                    .padding(.vertical, 10)
                 }
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
+
+            Button {
+                let index = viewModel.selectedIndex
+                print("저장 tapped: \(index)")
+            } label: {
+                Text("저장하기")
+                    .font(.headline)
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 56)
+                    .background(Color.blue)
+                    .clipShape(RoundedRectangle(cornerRadius: 20))
+            }
+            .padding(.horizontal, 20)
+            .padding(.bottom, 6)
         }
         .padding(.top, 16)
+        .background(Color(.systemGroupedBackground))
     }
 }
 

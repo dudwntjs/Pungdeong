@@ -11,7 +11,12 @@ import SwiftUI
 struct PungdeongApp: App {
     var body: some Scene {
         WindowGroup {
-            MainTabView()
+            RecordView(
+                viewModel: RecordViewModel(
+                    getDayRecordsUseCase: DefaultGetDayRecordsUseCase()
+                )
+            )
         }
     }
 }
+

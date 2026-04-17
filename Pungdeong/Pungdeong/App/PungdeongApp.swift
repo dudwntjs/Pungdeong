@@ -11,6 +11,7 @@ import SwiftUI
 struct PungdeongApp: App {
     var body: some Scene {
         WindowGroup {
+<<<<<<< HEAD
             CalendarView(
                 viewModel: CalendarViewModel(
                     getCalendarDaysUseCase: DefaultGetCalendarDaysUseCase(

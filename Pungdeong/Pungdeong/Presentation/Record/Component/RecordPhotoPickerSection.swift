@@ -14,7 +14,7 @@ struct RecordPhotoPickerSection:View {
     
     var body: some View {
         VStack(alignment: .leading,spacing:12) {
-            Text("오늘의 풍덩 한 장면")
+            Text("그날의 풍덩 한 장면")
                 .font(.headline)
             
             ScrollView(.horizontal,showsIndicators:false) {

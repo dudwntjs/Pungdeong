@@ -16,11 +16,11 @@ struct RecordView: View {
     
     var body: some View {
         VStack(spacing: 20) {
-            
             PungdeongHeaderView(
                 title: "그날의 풍덩",
                 subtitle: "사진과 함께 얼마나 풍덩했는지 기록해보세요"
             )
+
             TabView(selection: $viewModel.selectedIndex) {
                 ForEach(Array(viewModel.records.enumerated()), id: \.element.id) { index, record in
                     RecordCardView(
@@ -32,32 +32,19 @@ struct RecordView: View {
                         },
                         onMemoChange: { memo in
                             viewModel.updateMemo(memo, at: index)
+                        },
+                        onSave: {
+                            print("저장 tapped: \(index)")
                         }
                     )
                     .tag(index)
-                    .padding(.horizontal,20)
+                    .padding(.horizontal, 20)
                     .padding(.vertical, 10)
                 }
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
-            
-            pageIndicator
         }
         .padding(.top, 16)
-    }
-    
-    private var pageIndicator: some View {
-        HStack(spacing: 8) {
-            ForEach(0..<viewModel.records.count, id: \.self) { index in
-                Capsule()
-                    .fill(index == viewModel.selectedIndex ? Color.black : Color.gray.opacity(0.25))
-                    .frame(
-                        width: index == viewModel.selectedIndex ? 20 : 8,
-                        height: 8
-                    )
-            }
-        }
-        .padding(.bottom, 8)
     }
 }
 
@@ -68,4 +55,3 @@ struct RecordView: View {
         )
     )
 }
-

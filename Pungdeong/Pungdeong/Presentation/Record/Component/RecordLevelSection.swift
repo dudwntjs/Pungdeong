@@ -13,7 +13,7 @@ struct RecordLevelSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("오늘 얼마나 풍덩했나요?")
+            Text("그날 얼마나 풍덩했나요?")
                 .font(.headline)
 
             HStack(spacing: 12) {

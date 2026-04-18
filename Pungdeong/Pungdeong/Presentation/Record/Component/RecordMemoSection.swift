@@ -17,7 +17,7 @@ struct RecordMemoSection: View {
                 .font(.headline)
 
             TextField(
-                "오늘 가장 풍덩했던 순간을 짧게 남겨보세요",
+                "그날 가장 풍덩했던 순간을 짧게 남겨보세요",
                 text: Binding(
                     get: { memo },
                     set: { onMemoChange($0) }

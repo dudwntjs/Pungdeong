@@ -12,13 +12,16 @@ struct RecordView: View {
     @StateObject private var viewModel: RecordViewModel
 
     let customBackAction: (() -> Void)?
+    let onSave: ((DailyRecord) -> Void)?
 
     init(
         viewModel: RecordViewModel,
-        customBackAction: (() -> Void)? = nil
+        customBackAction: (() -> Void)? = nil,
+        onSave: ((DailyRecord) -> Void)? = nil
     ) {
         _viewModel = StateObject(wrappedValue: viewModel)
         self.customBackAction = customBackAction
+        self.onSave = onSave
     }
 
     var body: some View {
@@ -65,8 +68,14 @@ struct RecordView: View {
             .tabViewStyle(.page(indexDisplayMode: .never))
 
             Button {
-                let index = viewModel.selectedIndex
-                print("저장 tapped: \(index)")
+                guard let record = viewModel.currentRecord else { return }
+                onSave?(record)
+
+                if let customBackAction {
+                    customBackAction()
+                } else {
+                    dismiss()
+                }
             } label: {
                 Text("저장하기")
                     .font(.headline)

@@ -158,4 +158,12 @@ final class CalendarViewModel: ObservableObject {
         let target = calendar.startOfDay(for: date)
         return target > today
     }
+    
+    func saveRecord(_ record: DailyRecord) {
+        let normalizedDate = normalize(record.date)
+        if let level = record.level {
+            records[normalizedDate] = level
+        }
+        reload()
+    }
 }

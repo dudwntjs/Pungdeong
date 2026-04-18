@@ -92,7 +92,11 @@ struct CalendarView: View {
                         viewModel: RecordViewModel(
                             selectedDate: selectedDate,
                             getDayRecordsUseCase: DefaultGetDayRecordsUseCase()
-                        )
+                        ),
+                        onSave: { record in
+                            viewModel.saveRecord(record)
+                            goToRecord = false
+                        }
                     )
                 }
             }

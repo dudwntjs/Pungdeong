@@ -12,7 +12,7 @@ import Combine
 @MainActor
 final class RecordViewModel: ObservableObject {
     @Published var records: [DailyRecord] = []
-    @Published var selectedIndex: Int = 1
+    @Published var selectedIndex: Int = 0
 
     private let selectedDate: Date
     private let getDayRecordsUseCase: GetDayRecordsUseCase
@@ -24,6 +24,11 @@ final class RecordViewModel: ObservableObject {
         self.selectedDate = selectedDate
         self.getDayRecordsUseCase = getDayRecordsUseCase
         load()
+    }
+
+    var currentRecord: DailyRecord? {
+        guard records.indices.contains(selectedIndex) else { return nil }
+        return records[selectedIndex]
     }
 
     func load() {

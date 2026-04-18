@@ -78,11 +78,14 @@ struct CalendarView: View {
                 .presentationBackground(.white)
             }
             .navigationDestination(isPresented: $goToRecord) {
-                RecordView(
-                    viewModel: RecordViewModel(
-                        getDayRecordsUseCase: DefaultGetDayRecordsUseCase()
+                if let selectedDate = viewModel.selectedDate {
+                    RecordView(
+                        viewModel: RecordViewModel(
+                            selectedDate: selectedDate,
+                            getDayRecordsUseCase: DefaultGetDayRecordsUseCase()
+                        )
                     )
-                )
+                }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         }

@@ -10,20 +10,20 @@ import SwiftUI
 struct CalendarView: View {
     @StateObject private var viewModel: CalendarViewModel
     @State private var goToRecord = false
-    
+
     init(viewModel: CalendarViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
     }
-    
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 40) {
-                
+
                 PungdeongHeaderView(
                     title: "이달의 풍덩",
                     subtitle: "그날 얼마나 풍덩했는지 남겨보세요"
                 )
-                
+
                 VStack(spacing: 30) {
                     CalendarHeaderView(
                         title: viewModel.headerTitle,
@@ -31,10 +31,10 @@ struct CalendarView: View {
                         onTapPrevious: viewModel.tapPreviousMonth,
                         onTapNext: viewModel.tapNextMonth
                     )
-                    
+
                     WeekdayHeaderView()
                 }
-                
+
                 CalendarGridView(
                     days: viewModel.days,
                     onTapDate: viewModel.select
@@ -53,7 +53,7 @@ struct CalendarView: View {
                             .onTapGesture {
                                 viewModel.closeMonthPicker()
                             }
-                        
+
                         MonthYearPickerView(
                             initialYear: viewModel.displayedYear,
                             initialMonth: viewModel.displayedMonth,
@@ -76,6 +76,15 @@ struct CalendarView: View {
                     }
                 )
                 .presentationBackground(.white)
+            }
+            .alert("기록하시겠어요?", isPresented: $viewModel.showFutureDateAlert) {
+                Button("취소", role: .cancel) { }
+
+                Button("기록하기") {
+                    viewModel.confirmFutureDateRecording()
+                }
+            } message: {
+                Text("아직 미래의 날짜인데 기록하시겠어요?")
             }
             .navigationDestination(isPresented: $goToRecord) {
                 if let selectedDate = viewModel.selectedDate {

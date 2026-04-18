@@ -17,6 +17,7 @@ final class CalendarViewModel: ObservableObject {
     @Published var days: [CalendarDay] = []
     @Published var isPungdeongSheetPresented: Bool = false
     @Published var isMonthPickerExpanded: Bool = false
+    @Published var showFutureDateAlert: Bool = false
 
     @Published private(set) var records: [Date: PungdeongLevel] = [:]
 
@@ -36,6 +37,7 @@ final class CalendarViewModel: ObservableObject {
         self.getCalendarDaysUseCase = getCalendarDaysUseCase
         self.moveMonthUseCase = moveMonthUseCase
         self.formatCalendarHeaderUseCase = formatCalendarHeaderUseCase
+        self.selectedDate = calendar.startOfDay(for: baseDate)
 
         reload()
     }
@@ -88,7 +90,16 @@ final class CalendarViewModel: ObservableObject {
 
     func select(_ day: CalendarDay) {
         guard let date = day.date else { return }
-        selectedDate = date
+        let normalizedDate = normalize(date)
+
+        selectedDate = normalizedDate
+
+        if isFutureDate(normalizedDate) {
+            showFutureDateAlert = true
+            reload()
+            return
+        }
+
         isPungdeongSheetPresented = true
         reload()
     }
@@ -129,6 +140,10 @@ final class CalendarViewModel: ObservableObject {
         reload()
     }
 
+    func confirmFutureDateRecording() {
+        isPungdeongSheetPresented = true
+    }
+
     private func level(for date: Date) -> PungdeongLevel? {
         let normalizedDate = normalize(date)
         return records[normalizedDate]
@@ -136,5 +151,11 @@ final class CalendarViewModel: ObservableObject {
 
     private func normalize(_ date: Date) -> Date {
         calendar.startOfDay(for: date)
+    }
+
+    private func isFutureDate(_ date: Date) -> Bool {
+        let today = calendar.startOfDay(for: Date())
+        let target = calendar.startOfDay(for: date)
+        return target > today
     }
 }

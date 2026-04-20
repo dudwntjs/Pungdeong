@@ -5,9 +5,10 @@
 //  Created by sun on 3/29/26.
 //
 
+import Combine
 import Foundation
 import SwiftUI
-import Combine
+import SwiftData
 
 @MainActor
 final class RecordViewModel: ObservableObject {
@@ -16,13 +17,17 @@ final class RecordViewModel: ObservableObject {
 
     private let selectedDate: Date
     private let getDayRecordsUseCase: GetDayRecordsUseCase
+    private let modelContext: ModelContext
+    private let calendar = Calendar.current
 
     init(
         selectedDate: Date,
-        getDayRecordsUseCase: GetDayRecordsUseCase
+        getDayRecordsUseCase: GetDayRecordsUseCase,
+        modelContext: ModelContext
     ) {
         self.selectedDate = selectedDate
         self.getDayRecordsUseCase = getDayRecordsUseCase
+        self.modelContext = modelContext
         load()
     }
 
@@ -32,7 +37,68 @@ final class RecordViewModel: ObservableObject {
     }
 
     func load() {
-        records = getDayRecordsUseCase.execute(baseDate: selectedDate)
+        let normalizedDate = calendar.startOfDay(for: selectedDate)
+        let key = normalizedDate.dayKey
+
+        do {
+            let predicate = #Predicate<DailyRecordEntity> { $0.dayKey == key }
+            var descriptor = FetchDescriptor<DailyRecordEntity>(predicate: predicate)
+            descriptor.fetchLimit = 1
+
+            if let entity = try modelContext.fetch(descriptor).first {
+                let level = entity.levelRawValue.flatMap { PungdeongLevel(rawValue: $0) }
+                let images = entity.imageDatas.compactMap { $0.toImage() }
+
+                records = [
+                    DailyRecord(
+                        date: normalizedDate,
+                        level: level,
+                        memo: entity.memo,
+                        images: images
+                    )
+                ]
+            } else {
+                records = getDayRecordsUseCase.execute(baseDate: selectedDate)
+            }
+        } catch {
+            print("Record 불러오기 실패:", error)
+            records = getDayRecordsUseCase.execute(baseDate: selectedDate)
+        }
+    }
+
+    func save() {
+        guard let record = currentRecord else { return }
+
+        let normalizedDate = calendar.startOfDay(for: record.date)
+        let key = normalizedDate.dayKey
+        let imageDatas = record.images.compactMap { $0.toData() }
+
+        do {
+            let predicate = #Predicate<DailyRecordEntity> { $0.dayKey == key }
+            var descriptor = FetchDescriptor<DailyRecordEntity>(predicate: predicate)
+            descriptor.fetchLimit = 1
+
+            if let entity = try modelContext.fetch(descriptor).first {
+                entity.date = normalizedDate
+                entity.levelRawValue = record.level?.rawValue
+                entity.memo = record.memo
+                entity.imageDatas = imageDatas
+            } else {
+                let entity = DailyRecordEntity(
+                    dayKey: key,
+                    date: normalizedDate,
+                    levelRawValue: record.level?.rawValue,
+                    memo: record.memo,
+                    imageDatas: imageDatas
+                )
+                modelContext.insert(entity)
+            }
+
+            try modelContext.save()
+            print("Record 저장 성공:", key, "images:", imageDatas.count)
+        } catch {
+            print("Record 저장 실패:", error)
+        }
     }
 
     func updateLevel(_ level: PungdeongLevel, at index: Int) {
@@ -68,8 +134,6 @@ final class RecordViewModel: ObservableObject {
         guard records.indices.contains(index) else { return "" }
 
         let recordDate = records[index].date
-        let calendar = Calendar.current
-
         let today = calendar.startOfDay(for: Date())
         let targetDay = calendar.startOfDay(for: recordDate)
 
@@ -77,11 +141,7 @@ final class RecordViewModel: ObservableObject {
             return ""
         }
 
-        if dayDiff == 0 {
-            return "오늘"
-        } else {
-            return "\(dayDiff)일 전"
-        }
+        return dayDiff == 0 ? "오늘" : "\(dayDiff)일 전"
     }
 
     func formattedDate(_ date: Date) -> String {

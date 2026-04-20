@@ -6,8 +6,10 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct CalendarView: View {
+    @Environment(\.modelContext) private var modelContext
     @StateObject private var viewModel: CalendarViewModel
     @State private var goToRecord = false
 
@@ -69,7 +71,19 @@ struct CalendarView: View {
             .sheet(isPresented: $viewModel.isPungdeongSheetPresented) {
                 PungdeongBottomSheetView(
                     selectedDate: viewModel.selectedDate,
-                    onSelectLevel: viewModel.savePungdeong,
+                    selectedLevel: viewModel.selectedLevel,
+                    onSelectLevel: { level in
+                        guard let selectedDate = viewModel.selectedDate else { return }
+
+                        let record = DailyRecord(
+                            date: selectedDate,
+                            level: level,
+                            memo: ""
+                        )
+
+                        viewModel.saveRecord(record, context: modelContext)
+                        viewModel.isPungdeongSheetPresented = false
+                    },
                     onTapDetail: {
                         viewModel.isPungdeongSheetPresented = false
                         goToRecord = true
@@ -77,30 +91,31 @@ struct CalendarView: View {
                 )
                 .presentationBackground(.white)
             }
-            .alert("기록하시겠어요?", isPresented: $viewModel.showFutureDateAlert) {
-                Button("취소", role: .cancel) { }
+            .alert("기록을 남길 수 없어요", isPresented: $viewModel.showFutureDateAlert) {
+                Button("돌아가기", role: .cancel) { }
 
-                Button("기록하기") {
-                    viewModel.confirmFutureDateRecording()
-                }
             } message: {
-                Text("아직 미래의 날짜인데 기록하시겠어요?")
+                Text("풍덩했던 기록을 적어야해요")
             }
             .navigationDestination(isPresented: $goToRecord) {
                 if let selectedDate = viewModel.selectedDate {
                     RecordView(
                         viewModel: RecordViewModel(
                             selectedDate: selectedDate,
-                            getDayRecordsUseCase: DefaultGetDayRecordsUseCase()
+                            getDayRecordsUseCase: DefaultGetDayRecordsUseCase(),
+                            modelContext: modelContext
                         ),
-                        onSave: { record in
-                            viewModel.saveRecord(record)
+                        customBackAction: {
+                            viewModel.loadSavedRecords(context: modelContext)
                             goToRecord = false
                         }
                     )
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        }
+        .onAppear {
+            viewModel.loadSavedRecords(context: modelContext)
         }
     }
 }

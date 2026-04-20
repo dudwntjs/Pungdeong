@@ -68,8 +68,7 @@ struct RecordView: View {
             .tabViewStyle(.page(indexDisplayMode: .never))
 
             Button {
-                guard let record = viewModel.currentRecord else { return }
-                onSave?(record)
+                viewModel.save()
 
                 if let customBackAction {
                     customBackAction()

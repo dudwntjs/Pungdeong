@@ -5,9 +5,10 @@
 //  Created by sun on 3/27/26.
 //
 
+import Combine
 import Foundation
 import SwiftUI
-import Combine
+import SwiftData
 
 @MainActor
 final class CalendarViewModel: ObservableObject {
@@ -19,7 +20,7 @@ final class CalendarViewModel: ObservableObject {
     @Published var isMonthPickerExpanded: Bool = false
     @Published var showFutureDateAlert: Bool = false
 
-    @Published private(set) var records: [Date: PungdeongLevel] = [:]
+    @Published var records: [String: PungdeongLevel] = [:]
 
     private let baseDate: Date
     private let getCalendarDaysUseCase: GetCalendarDaysUseCase
@@ -54,6 +55,11 @@ final class CalendarViewModel: ObservableObject {
         calendar.component(.month, from: displayedMonthDate)
     }
 
+    var selectedLevel: PungdeongLevel? {
+        guard let selectedDate else { return nil }
+        return records[selectedDate.dayKey]
+    }
+
     func reload() {
         headerTitle = formatCalendarHeaderUseCase.execute(
             baseDate: baseDate,
@@ -68,6 +74,71 @@ final class CalendarViewModel: ObservableObject {
                 self?.level(for: date)
             }
         )
+    }
+
+    func loadSavedRecords(context: ModelContext) {
+        do {
+            let descriptor = FetchDescriptor<DailyRecordEntity>()
+            let entities = try context.fetch(descriptor)
+
+            let mapped: [String: PungdeongLevel] = Dictionary(
+                uniqueKeysWithValues: entities.compactMap { entity in
+                    guard let raw = entity.levelRawValue,
+                          let level = PungdeongLevel(rawValue: raw) else {
+                        return nil
+                    }
+                    return (entity.dayKey, level)
+                }
+            )
+
+            records = mapped
+            reload()
+        } catch {
+            print("불러오기 실패: \(error)")
+        }
+    }
+
+    func saveRecord(_ record: DailyRecord, context: ModelContext) {
+        let normalizedDate = normalize(record.date)
+        let key = normalizedDate.dayKey
+        
+        print("=== saveRecord start ===")
+            print("normalizedDate:", normalizedDate)
+            print("key:", key)
+            print("level:", record.level as Any)
+            print("rawValue:", record.level?.rawValue as Any)
+
+        do {
+            let predicate = #Predicate<DailyRecordEntity> { $0.dayKey == key }
+            var descriptor = FetchDescriptor<DailyRecordEntity>(predicate: predicate)
+            descriptor.fetchLimit = 1
+
+            let existing = try context.fetch(descriptor).first
+
+            let imageDatas = record.images.compactMap { $0.toData() }
+
+            if let existing {
+                existing.date = normalizedDate
+                existing.levelRawValue = record.level?.rawValue
+                existing.memo = record.memo
+                existing.imageDatas = imageDatas
+            } else {
+                let entity = DailyRecordEntity(
+                    dayKey: key,
+                    date: normalizedDate,
+                    levelRawValue: record.level?.rawValue,
+                    memo: record.memo,
+                    imageDatas: imageDatas
+                )
+                context.insert(entity)
+            }
+
+            try context.save()
+            loadSavedRecords(context: context)
+
+        } catch {
+            print("저장 실패: \(error)")
+        }
     }
 
     func tapPreviousMonth() {
@@ -104,16 +175,6 @@ final class CalendarViewModel: ObservableObject {
         reload()
     }
 
-    func savePungdeong(_ level: PungdeongLevel) {
-        guard let selectedDate else { return }
-
-        let normalizedDate = normalize(selectedDate)
-        records[normalizedDate] = level
-
-        isPungdeongSheetPresented = false
-        reload()
-    }
-
     func closeSheet() {
         isPungdeongSheetPresented = false
     }
@@ -145,8 +206,7 @@ final class CalendarViewModel: ObservableObject {
     }
 
     private func level(for date: Date) -> PungdeongLevel? {
-        let normalizedDate = normalize(date)
-        return records[normalizedDate]
+        return records[date.dayKey]
     }
 
     private func normalize(_ date: Date) -> Date {
@@ -157,13 +217,5 @@ final class CalendarViewModel: ObservableObject {
         let today = calendar.startOfDay(for: Date())
         let target = calendar.startOfDay(for: date)
         return target > today
-    }
-    
-    func saveRecord(_ record: DailyRecord) {
-        let normalizedDate = normalize(record.date)
-        if let level = record.level {
-            records[normalizedDate] = level
-        }
-        reload()
     }
 }

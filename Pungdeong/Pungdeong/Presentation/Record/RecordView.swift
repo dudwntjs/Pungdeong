@@ -81,9 +81,10 @@ struct RecordView: View {
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .frame(height: 56)
-                    .background(Color.blue)
+                    .background(viewModel.canSave ? Color.blue : Color.gray)
                     .clipShape(RoundedRectangle(cornerRadius: 20))
             }
+            .disabled(!viewModel.canSave)
             .padding(.horizontal, 20)
             .padding(.bottom, 6)
         }
@@ -91,5 +92,6 @@ struct RecordView: View {
         .background(Color(.systemGroupedBackground))
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
+        .ignoresSafeArea(.keyboard, edges: .bottom)
     }
 }

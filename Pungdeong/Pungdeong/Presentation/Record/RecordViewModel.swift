@@ -30,6 +30,11 @@ final class RecordViewModel: ObservableObject {
         self.modelContext = modelContext
         load()
     }
+    
+    var canSave: Bool {
+        guard records.indices.contains(selectedIndex) else { return false }
+        return records[selectedIndex].level != nil
+    }
 
     var currentRecord: DailyRecord? {
         guard records.indices.contains(selectedIndex) else { return nil }

@@ -6,12 +6,24 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct PungdeongApp: App {
     var body: some Scene {
         WindowGroup {
-            MainTabView()
+            CalendarView(
+                viewModel: CalendarViewModel(
+                    getCalendarDaysUseCase: DefaultGetCalendarDaysUseCase(
+                        repository: DefaultCalendarRepository()
+                    ),
+                    moveMonthUseCase: DefaultMoveMonthUseCase(),
+                    formatCalendarHeaderUseCase: DefaultFormatCalendarHeaderUseCase(
+                        repository: DefaultCalendarRepository()
+                    )
+                )
+            )
         }
+        .modelContainer(for: [DailyRecordEntity.self])
     }
 }

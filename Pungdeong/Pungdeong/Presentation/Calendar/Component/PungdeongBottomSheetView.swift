@@ -9,7 +9,21 @@ import SwiftUI
 
 struct PungdeongBottomSheetView: View {
     let selectedDate: Date?
+    let selectedLevel: PungdeongLevel?
     let onSelectLevel: (PungdeongLevel) -> Void
+    let onTapDetail: (() -> Void)?
+
+    init(
+        selectedDate: Date?,
+        selectedLevel: PungdeongLevel?,
+        onSelectLevel: @escaping (PungdeongLevel) -> Void,
+        onTapDetail: (() -> Void)? = nil
+    ) {
+        self.selectedDate = selectedDate
+        self.selectedLevel = selectedLevel
+        self.onSelectLevel = onSelectLevel
+        self.onTapDetail = onTapDetail
+    }
 
     var body: some View {
         VStack(spacing: 24) {
@@ -35,38 +49,64 @@ struct PungdeongBottomSheetView: View {
                 levelButton(.deep, imageName: "Progress3")
             }
 
-            Spacer()
+            Button {
+                onTapDetail?()
+            } label: {
+                HStack(spacing: 6) {
+                    Text("더 자세히 기록해볼까요?")
+                    Image(systemName: "chevron.right")
+                }
+                .font(.headline)
+                .foregroundStyle(.secondary)
+            }
+            .padding(.top, 4)
+
+            Spacer(minLength: 0)
         }
         .padding()
-        .presentationDetents([.height(360)])
+        .presentationDetents([.height(450)])
+        .presentationBackground(.white)
     }
 
     private func levelButton(_ level: PungdeongLevel, imageName: String) -> some View {
-        Button {
+        let isSelected = selectedLevel == level
+
+        return Button {
             onSelectLevel(level)
         } label: {
             HStack(spacing: 12) {
-
                 Image(imageName)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 36, height: 36)
+                    .frame(width: 46, height: 46)
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(level.title)
                         .font(.headline)
-                        .foregroundStyle(.primary)
+                        .foregroundStyle(.blue)
 
                     Text(level.description)
                         .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(.blue.opacity(0.45))
                 }
 
                 Spacer()
             }
-            .padding()
-            .background(Color(.systemGray6))
-            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 16)
+            .background(
+                RoundedRectangle(cornerRadius: 18)
+                    .fill(isSelected ? Color.blue.opacity(0.12) : Color(.systemGray6))
+            )
+            .overlay {
+                RoundedRectangle(cornerRadius: 18)
+                    .stroke(
+                        isSelected ? Color.blue.opacity(0.6) : Color.clear,
+                        lineWidth: 1.5
+                    )
+            }
         }
+        .buttonStyle(.plain)
     }
 }

@@ -13,26 +13,34 @@ struct RecordCardView: View {
     @Binding var record: DailyRecord
     let onSelectLevel: (PungdeongLevel) -> Void
     let onMemoChange: (String) -> Void
-
+    
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
+                
                 VStack(alignment: .leading, spacing: 4) {
                     Text(title)
                         .font(.title3.bold())
-
+                    
                     Text(dateText)
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
-
-                RecordPhotoPickerSection(images: $record.images)
-
+                
                 RecordLevelSection(
                     selectedLevel: record.level,
                     onSelectLevel: onSelectLevel
                 )
-
+                
+                Text("그날의 풍덩 장소")
+                    .font(.headline)
+                
+                RecordMapView()
+                    .frame(height: 250)
+                    .clipShape(RoundedRectangle(cornerRadius: 20))
+                
+                RecordPhotoPickerSection(images: $record.images)
+                
                 RecordMemoSection(
                     memo: record.memo,
                     onMemoChange: onMemoChange
@@ -41,7 +49,7 @@ struct RecordCardView: View {
             .padding(20)
         }
         .background(
-            RoundedRectangle(cornerRadius: 24)
+            RoundedRectangle(cornerRadius: 20)
                 .fill(Color.white)
                 .shadow(color: .black.opacity(0.08), radius: 12, y: 4)
         )

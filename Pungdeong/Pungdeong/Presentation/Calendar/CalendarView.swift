@@ -12,6 +12,8 @@ struct CalendarView: View {
     @Environment(\.modelContext) private var modelContext
     @StateObject private var viewModel: CalendarViewModel
     @State private var goToRecord = false
+    @State private var dragOffset: CGFloat = 0
+    @State private var pageWidth: CGFloat = 0
 
     init(viewModel: CalendarViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
@@ -20,7 +22,6 @@ struct CalendarView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 40) {
-
                 PungdeongHeaderView(
                     title: "이달의 풍덩",
                     subtitle: "그날 얼마나 풍덩했는지 남겨보세요"
@@ -30,37 +31,19 @@ struct CalendarView: View {
                     CalendarHeaderView(
                         title: viewModel.headerTitle,
                         onTapMonthPicker: viewModel.toggleMonthPicker,
-                        onTapPrevious: viewModel.tapPreviousMonth,
-                        onTapNext: viewModel.tapNextMonth
+                        onTapPrevious: moveToPreviousMonthByButton,
+                        onTapNext: moveToNextMonthByButton
                     )
 
                     WeekdayHeaderView()
                 }
 
-                CalendarGridView(
-                    days: viewModel.days,
-                    onTapDate: viewModel.select
-                )
-                .frame(maxWidth: .infinity)
+                monthCarousel
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 320)
             }
             .padding(.horizontal, 20)
             .padding(.top, 16)
-            .gesture(
-                DragGesture()
-                    .onEnded { value in
-                        let horizontalAmount = value.translation.width
-                        let verticalAmount = value.translation.height
-
-                        guard abs(horizontalAmount) > abs(verticalAmount) else { return }
-                        guard abs(horizontalAmount) > 30 else { return }
-                        
-                        if horizontalAmount < 0 {
-                            viewModel.tapNextMonth()
-                        } else {
-                            viewModel.tapPreviousMonth()
-                        }
-                    }
-            )
             .overlay(alignment: .top) {
                 if viewModel.isMonthPickerExpanded {
                     ZStack(alignment: .top) {
@@ -109,7 +92,6 @@ struct CalendarView: View {
             }
             .alert("기록을 남길 수 없어요", isPresented: $viewModel.showFutureDateAlert) {
                 Button("돌아가기", role: .cancel) { }
-
             } message: {
                 Text("풍덩했던 기록을 적어야해요")
             }
@@ -134,4 +116,132 @@ struct CalendarView: View {
             viewModel.loadSavedRecords(context: modelContext)
         }
     }
+
+    private var monthCarousel: some View {
+        GeometryReader { geometry in
+            let width = geometry.size.width
+
+            HStack(spacing: 8) {
+                CalendarGridView(
+                    days: viewModel.previousMonthDays,
+                    onTapDate: viewModel.select
+                )
+                .frame(width: width - 4)
+
+                CalendarGridView(
+                    days: viewModel.days,
+                    onTapDate: viewModel.select
+                )
+                .frame(width: width - 4)
+
+                CalendarGridView(
+                    days: viewModel.nextMonthDays,
+                    onTapDate: viewModel.select
+                )
+                .frame(width: width - 4)
+            }
+            .offset(x: -width + dragOffset)
+            .contentShape(Rectangle())
+            .onAppear {
+                pageWidth = width
+            }
+            .onChange(of: width) { _, newValue in
+                pageWidth = newValue
+            }
+            .gesture(
+                DragGesture()
+                    .onChanged { value in
+                        let horizontal = value.translation.width
+                        let vertical = value.translation.height
+
+                        guard abs(horizontal) > abs(vertical) else { return }
+                        dragOffset = horizontal
+                    }
+                    .onEnded { value in
+                        let horizontal = value.translation.width
+                        let vertical = value.translation.height
+                        let threshold = width * 0.2
+
+                        guard abs(horizontal) > abs(vertical) else {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                dragOffset = 0
+                            }
+                            return
+                        }
+
+                        if horizontal < -threshold {
+                            withAnimation(.easeInOut(duration: 0.25)) {
+                                dragOffset = -width
+                            }
+
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                                viewModel.tapNextMonth()
+                                dragOffset = 0
+                            }
+                        } else if horizontal > threshold {
+                            withAnimation(.easeInOut(duration: 0.25)) {
+                                dragOffset = width
+                            }
+
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                                viewModel.tapPreviousMonth()
+                                dragOffset = 0
+                            }
+                        } else {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                dragOffset = 0
+                            }
+                        }
+                    }
+            )
+            .clipped()
+        }
+    }
+
+    private func moveToNextMonthByButton() {
+        guard pageWidth > 0 else {
+            viewModel.tapNextMonth()
+            return
+        }
+
+        withAnimation(.easeInOut(duration: 0.25)) {
+            dragOffset = -pageWidth
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+            viewModel.tapNextMonth()
+            dragOffset = 0
+        }
+    }
+
+    private func moveToPreviousMonthByButton() {
+        guard pageWidth > 0 else {
+            viewModel.tapPreviousMonth()
+            return
+        }
+
+        withAnimation(.easeInOut(duration: 0.25)) {
+            dragOffset = pageWidth
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+            viewModel.tapPreviousMonth()
+            dragOffset = 0
+        }
+    }
+}
+
+#Preview {
+    CalendarView(
+        viewModel: CalendarViewModel(
+            getCalendarDaysUseCase: DefaultGetCalendarDaysUseCase(
+                repository: DefaultCalendarRepository()
+            ),
+            moveMonthUseCase: DefaultMoveMonthUseCase(),
+            formatCalendarHeaderUseCase: DefaultFormatCalendarHeaderUseCase(
+                repository: DefaultCalendarRepository()
+            )
+        )
+    )
+    .modelContainer(for: [DailyRecordEntity.self])
 }

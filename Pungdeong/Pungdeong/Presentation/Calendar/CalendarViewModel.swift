@@ -15,7 +15,11 @@ final class CalendarViewModel: ObservableObject {
     @Published var currentMonthOffset: Int = 0
     @Published var selectedDate: Date?
     @Published var headerTitle: String = ""
+
     @Published var days: [CalendarDay] = []
+    @Published var previousMonthDays: [CalendarDay] = []
+    @Published var nextMonthDays: [CalendarDay] = []
+
     @Published var isPungdeongSheetPresented: Bool = false
     @Published var isMonthPickerExpanded: Bool = false
     @Published var showFutureDateAlert: Bool = false
@@ -66,14 +70,9 @@ final class CalendarViewModel: ObservableObject {
             offset: currentMonthOffset
         )
 
-        days = getCalendarDaysUseCase.execute(
-            baseDate: baseDate,
-            offset: currentMonthOffset,
-            selectedDate: selectedDate,
-            levelProvider: { [weak self] date in
-                self?.level(for: date)
-            }
-        )
+        previousMonthDays = makeDays(offset: currentMonthOffset - 1)
+        days = makeDays(offset: currentMonthOffset)
+        nextMonthDays = makeDays(offset: currentMonthOffset + 1)
     }
 
     func loadSavedRecords(context: ModelContext) {
@@ -101,12 +100,12 @@ final class CalendarViewModel: ObservableObject {
     func saveRecord(_ record: DailyRecord, context: ModelContext) {
         let normalizedDate = normalize(record.date)
         let key = normalizedDate.dayKey
-        
+
         print("=== saveRecord start ===")
-            print("normalizedDate:", normalizedDate)
-            print("key:", key)
-            print("level:", record.level as Any)
-            print("rawValue:", record.level?.rawValue as Any)
+        print("normalizedDate:", normalizedDate)
+        print("key:", key)
+        print("level:", record.level as Any)
+        print("rawValue:", record.level?.rawValue as Any)
 
         do {
             let predicate = #Predicate<DailyRecordEntity> { $0.dayKey == key }
@@ -114,7 +113,6 @@ final class CalendarViewModel: ObservableObject {
             descriptor.fetchLimit = 1
 
             let existing = try context.fetch(descriptor).first
-
             let imageDatas = record.images.compactMap { $0.toData() }
 
             if let existing {
@@ -205,8 +203,19 @@ final class CalendarViewModel: ObservableObject {
         isPungdeongSheetPresented = true
     }
 
+    private func makeDays(offset: Int) -> [CalendarDay] {
+        getCalendarDaysUseCase.execute(
+            baseDate: baseDate,
+            offset: offset,
+            selectedDate: selectedDate,
+            levelProvider: { [weak self] date in
+                self?.level(for: date)
+            }
+        )
+    }
+
     private func level(for date: Date) -> PungdeongLevel? {
-        return records[date.dayKey]
+        records[date.dayKey]
     }
 
     private func normalize(_ date: Date) -> Date {

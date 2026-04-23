@@ -10,10 +10,11 @@ import SwiftUI
 struct RecordView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var viewModel: RecordViewModel
-    
+    @State private var showMap = false
+
     let customBackAction: (() -> Void)?
     let onSave: ((DailyRecord) -> Void)?
-    
+
     init(
         viewModel: RecordViewModel,
         customBackAction: (() -> Void)? = nil,
@@ -23,11 +24,12 @@ struct RecordView: View {
         self.customBackAction = customBackAction
         self.onSave = onSave
     }
-    
+
     var body: some View {
         ZStack {
             Color(.systemGroupedBackground)
                 .ignoresSafeArea()
+
             VStack(spacing: 16) {
                 PungdeongHeaderView(
                     title: "그날의 풍덩",
@@ -50,13 +52,15 @@ struct RecordView: View {
                     }
                 }
                 .padding(.horizontal, 20)
-                
+
                 TabView(selection: $viewModel.selectedIndex) {
                     ForEach(Array(viewModel.records.enumerated()), id: \.element.id) { index, record in
                         RecordCardView(
                             title: viewModel.title(for: index),
                             dateText: viewModel.formattedDate(record.date),
                             record: viewModel.bindingForRecord(at: index),
+                            selectedCoordinate: $viewModel.selectedCoordinate,
+                           selectedPlaceName: $viewModel.selectedPlaceName,
                             onSelectLevel: { level in
                                 viewModel.updateLevel(level, at: index)
                             },
@@ -69,10 +73,14 @@ struct RecordView: View {
                     }
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
-                
+
                 Button {
                     viewModel.save()
-                    
+
+                    if let saved = viewModel.currentRecord {
+                        onSave?(saved)
+                    }
+
                     if let customBackAction {
                         customBackAction()
                     } else {
@@ -97,6 +105,12 @@ struct RecordView: View {
         }
         .onTapGesture {
             UIApplication.shared.endEditing()
+        }
+        .sheet(isPresented: $showMap) {
+            RecordMapView(
+                result: $viewModel.selectedCoordinate,
+                currentKeyword: $viewModel.selectedPlaceName
+            )
         }
     }
 }

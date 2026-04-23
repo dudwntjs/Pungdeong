@@ -6,11 +6,16 @@
 //
 
 import SwiftUI
+import MapKit
 
 struct RecordCardView: View {
     let title: String
     let dateText: String
     @Binding var record: DailyRecord
+    
+    @Binding var selectedCoordinate: CLLocationCoordinate2D?
+    @Binding var selectedPlaceName: String
+    
     let onSelectLevel: (PungdeongLevel) -> Void
     let onMemoChange: (String) -> Void
     
@@ -35,7 +40,10 @@ struct RecordCardView: View {
                 Text("그날의 풍덩 장소")
                     .font(.headline)
                 
-                RecordMapView()
+                RecordMapView(
+                    result: $selectedCoordinate,
+                   currentKeyword: $selectedPlaceName
+                )
                     .frame(height: 250)
                     .clipShape(RoundedRectangle(cornerRadius: 20))
                 

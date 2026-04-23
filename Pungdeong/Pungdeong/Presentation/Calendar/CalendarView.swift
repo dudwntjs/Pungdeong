@@ -45,6 +45,22 @@ struct CalendarView: View {
             }
             .padding(.horizontal, 20)
             .padding(.top, 16)
+            .gesture(
+                DragGesture()
+                    .onEnded { value in
+                        let horizontalAmount = value.translation.width
+                        let verticalAmount = value.translation.height
+
+                        guard abs(horizontalAmount) > abs(verticalAmount) else { return }
+                        guard abs(horizontalAmount) > 30 else { return }
+                        
+                        if horizontalAmount < 0 {
+                            viewModel.tapNextMonth()
+                        } else {
+                            viewModel.tapPreviousMonth()
+                        }
+                    }
+            )
             .overlay(alignment: .top) {
                 if viewModel.isMonthPickerExpanded {
                     ZStack(alignment: .top) {

@@ -9,11 +9,14 @@ import Combine
 import Foundation
 import SwiftUI
 import SwiftData
+import MapKit
 
 @MainActor
 final class RecordViewModel: ObservableObject {
     @Published var records: [DailyRecord] = []
     @Published var selectedIndex: Int = 0
+    @Published var selectedCoordinate: CLLocationCoordinate2D?
+    @Published var selectedPlaceName: String = "현재 위치"
 
     private let selectedDate: Date
     private let getDayRecordsUseCase: GetDayRecordsUseCase
@@ -59,9 +62,18 @@ final class RecordViewModel: ObservableObject {
                         date: normalizedDate,
                         level: level,
                         memo: entity.memo,
-                        images: images
+                        images: images,
+                        latitude: entity.latitude,
+                        longitude: entity.longitude,
+                        placeName: entity.placeName
                     )
                 ]
+
+                if let lat = entity.latitude, let lng = entity.longitude {
+                    selectedCoordinate = CLLocationCoordinate2D(latitude: lat, longitude: lng)
+                    selectedPlaceName = entity.placeName ?? "저장된 위치"
+                }
+
             } else {
                 records = getDayRecordsUseCase.execute(baseDate: selectedDate)
             }
@@ -72,8 +84,15 @@ final class RecordViewModel: ObservableObject {
     }
 
     func save() {
-        guard let record = currentRecord else { return }
+        guard records.indices.contains(selectedIndex) else { return }
 
+        if let coord = selectedCoordinate {
+            records[selectedIndex].latitude = coord.latitude
+            records[selectedIndex].longitude = coord.longitude
+            records[selectedIndex].placeName = selectedPlaceName
+        }
+
+        let record = records[selectedIndex]
         let normalizedDate = calendar.startOfDay(for: record.date)
         let key = normalizedDate.dayKey
         let imageDatas = record.images.compactMap { $0.toData() }
@@ -88,13 +107,19 @@ final class RecordViewModel: ObservableObject {
                 entity.levelRawValue = record.level?.rawValue
                 entity.memo = record.memo
                 entity.imageDatas = imageDatas
+                entity.latitude = record.latitude
+                entity.longitude = record.longitude
+                entity.placeName = record.placeName
             } else {
                 let entity = DailyRecordEntity(
                     dayKey: key,
                     date: normalizedDate,
                     levelRawValue: record.level?.rawValue,
                     memo: record.memo,
-                    imageDatas: imageDatas
+                    imageDatas: imageDatas,
+                    latitude: record.latitude,
+                    longitude: record.longitude,
+                    placeName: record.placeName
                 )
                 modelContext.insert(entity)
             }

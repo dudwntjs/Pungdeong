@@ -10,18 +10,18 @@ import MapKit
 
 struct RecordMapView: View {
     @State private var position: MapCameraPosition = .automatic
-    @State private var result: CLLocationCoordinate2D?
+    @Binding var result: CLLocationCoordinate2D?
+    @Binding var currentKeyword: String
+
     @State private var searchText: String = ""
-    @State private var currentKeyword: String = "현재 위치"
     @State private var locationManager = LocationManager()
 
     var body: some View {
         ZStack(alignment: .top) {
             Map(position: $position) {
-                
                 if let result {
                     Annotation(currentKeyword, coordinate: result) {
-                        BluePin(imageName: "햄토리")
+                        BluePin(imageName: "Progress2")
                     }
                 }
             }
@@ -32,14 +32,24 @@ struct RecordMapView: View {
         }
         .ignoresSafeArea(edges: .bottom)
         .onAppear {
-            setupLocation()
+            if let coord = result {
+                position = .region(
+                    MKCoordinateRegion(
+                        center: coord,
+                        latitudinalMeters: 1000,
+                        longitudinalMeters: 1000
+                    )
+                )
+            } else {
+                setupLocation()
+            }
         }
     }
 
     private func setupLocation() {
         locationManager.onUpdate = { loc in
             let coord = loc.coordinate
-            
+
             DispatchQueue.main.async {
                 if result == nil {
                     result = coord
@@ -56,7 +66,6 @@ struct RecordMapView: View {
         }
     }
 
-    // 검색
     private func search(_ keyword: String) {
         guard !keyword.isEmpty else { return }
 
@@ -66,7 +75,7 @@ struct RecordMapView: View {
         MKLocalSearch(request: req).start { response, _ in
             guard let item = response?.mapItems.first else { return }
 
-            let coord = item.placemark.location?.coordinate ?? item.location.coordinate
+            let coord = item.placemark.coordinate
 
             DispatchQueue.main.async {
                 currentKeyword = item.name ?? keyword

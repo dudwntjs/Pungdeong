@@ -56,24 +56,21 @@ final class RecordViewModel: ObservableObject {
 
     func title(for index: Int) -> String {
         guard records.indices.contains(index) else { return "" }
+
         let recordDate = records[index].date
         let calendar = Calendar.current
-        let today = calendar.startOfDay(for: Date())
 
-        if calendar.isDate(recordDate, inSameDayAs: today) {
+        let today = calendar.startOfDay(for: Date())
+        let targetDay = calendar.startOfDay(for: recordDate)
+
+        guard let dayDiff = calendar.dateComponents([.day], from: targetDay, to: today).day else {
+            return ""
+        }
+
+        if dayDiff == 0 {
             return "오늘"
-        } else if calendar.isDate(
-            recordDate,
-            inSameDayAs: calendar.date(byAdding: .day, value: -1, to: today) ?? today
-        ) {
-            return "어제"
-        } else if calendar.isDate(
-            recordDate,
-            inSameDayAs: calendar.date(byAdding: .day, value: -2, to: today) ?? today
-        ) {
-            return "그저께"
         } else {
-            return formattedDate(recordDate)
+            return "\(dayDiff)일 전"
         }
     }
 

@@ -10,6 +10,17 @@ import SwiftUI
 struct PungdeongBottomSheetView: View {
     let selectedDate: Date?
     let onSelectLevel: (PungdeongLevel) -> Void
+    let onTapDetail: (() -> Void)?
+
+    init(
+        selectedDate: Date?,
+        onSelectLevel: @escaping (PungdeongLevel) -> Void,
+        onTapDetail: (() -> Void)? = nil
+    ) {
+        self.selectedDate = selectedDate
+        self.onSelectLevel = onSelectLevel
+        self.onTapDetail = onTapDetail
+    }
 
     var body: some View {
         VStack(spacing: 24) {
@@ -35,10 +46,23 @@ struct PungdeongBottomSheetView: View {
                 levelButton(.deep, imageName: "Progress3")
             }
 
-            Spacer()
+            Button {
+                onTapDetail?()
+            } label: {
+                HStack(spacing: 6) {
+                    Text("더 자세히 기록해볼까요?")
+                    Image(systemName: "chevron.right")
+                }
+                .font(.headline)
+                .foregroundStyle(.secondary)
+            }
+            .padding(.top, 8)
+
+            Spacer(minLength: 0)
         }
         .padding()
-        .presentationDetents([.height(360)])
+        .presentationDetents([.height(430)])
+        .presentationBackground(.white)
     }
 
     private func levelButton(_ level: PungdeongLevel, imageName: String) -> some View {
@@ -46,7 +70,6 @@ struct PungdeongBottomSheetView: View {
             onSelectLevel(level)
         } label: {
             HStack(spacing: 12) {
-
                 Image(imageName)
                     .resizable()
                     .scaledToFit()
@@ -55,11 +78,11 @@ struct PungdeongBottomSheetView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(level.title)
                         .font(.headline)
-                        .foregroundStyle(.primary)
+                        .foregroundStyle(.blue)
 
                     Text(level.description)
                         .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(.blue.opacity(0.45))
                 }
 
                 Spacer()
@@ -68,5 +91,6 @@ struct PungdeongBottomSheetView: View {
             .background(Color(.systemGray6))
             .clipShape(RoundedRectangle(cornerRadius: 16))
         }
+        .buttonStyle(.plain)
     }
 }

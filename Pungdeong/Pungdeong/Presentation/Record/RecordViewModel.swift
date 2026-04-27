@@ -14,15 +14,20 @@ final class RecordViewModel: ObservableObject {
     @Published var records: [DailyRecord] = []
     @Published var selectedIndex: Int = 1
 
+    private let selectedDate: Date
     private let getDayRecordsUseCase: GetDayRecordsUseCase
 
-    init(getDayRecordsUseCase: GetDayRecordsUseCase) {
+    init(
+        selectedDate: Date,
+        getDayRecordsUseCase: GetDayRecordsUseCase
+    ) {
+        self.selectedDate = selectedDate
         self.getDayRecordsUseCase = getDayRecordsUseCase
         load()
     }
 
     func load() {
-        records = getDayRecordsUseCase.execute(baseDate: Date())
+        records = getDayRecordsUseCase.execute(baseDate: selectedDate)
     }
 
     func updateLevel(_ level: PungdeongLevel, at index: Int) {

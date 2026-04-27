@@ -11,12 +11,17 @@ import SwiftUI
 struct PungdeongApp: App {
     var body: some Scene {
         WindowGroup {
-            RecordView(
-                viewModel: RecordViewModel(
-                    getDayRecordsUseCase: DefaultGetDayRecordsUseCase()
+            CalendarView(
+                viewModel: CalendarViewModel(
+                    getCalendarDaysUseCase: DefaultGetCalendarDaysUseCase(
+                        repository: DefaultCalendarRepository()
+                    ),
+                    moveMonthUseCase: DefaultMoveMonthUseCase(),
+                    formatCalendarHeaderUseCase: DefaultFormatCalendarHeaderUseCase(
+                        repository: DefaultCalendarRepository()
+                    )
                 )
             )
         }
     }
 }
-

@@ -70,7 +70,7 @@ struct RecordMapView: View {
 
             DispatchQueue.main.async {
                 currentKeyword = item.name ?? keyword
-                result = coord   // 👉 기존 핀 교체
+                result = coord
                 position = .region(
                     MKCoordinateRegion(
                         center: coord,

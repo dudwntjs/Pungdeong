@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct PungdeongApp: App {
@@ -23,5 +24,6 @@ struct PungdeongApp: App {
                 )
             )
         }
+        .modelContainer(for: [DailyRecordEntity.self])
     }
 }

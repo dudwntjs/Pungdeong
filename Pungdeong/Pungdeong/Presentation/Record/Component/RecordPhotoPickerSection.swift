@@ -43,6 +43,7 @@ struct RecordPhotoPickerSection:View {
                     }
                 }
             }
+            .scrollClipDisabled(true)
         }
         .onChange(of: selectedItems) {_, items in
             Task {

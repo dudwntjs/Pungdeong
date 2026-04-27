@@ -12,13 +12,16 @@ struct RecordView: View {
     @StateObject private var viewModel: RecordViewModel
 
     let customBackAction: (() -> Void)?
+    let onSave: ((DailyRecord) -> Void)?
 
     init(
         viewModel: RecordViewModel,
-        customBackAction: (() -> Void)? = nil
+        customBackAction: (() -> Void)? = nil,
+        onSave: ((DailyRecord) -> Void)? = nil
     ) {
         _viewModel = StateObject(wrappedValue: viewModel)
         self.customBackAction = customBackAction
+        self.onSave = onSave
     }
 
     var body: some View {
@@ -65,17 +68,23 @@ struct RecordView: View {
             .tabViewStyle(.page(indexDisplayMode: .never))
 
             Button {
-                let index = viewModel.selectedIndex
-                print("저장 tapped: \(index)")
+                viewModel.save()
+
+                if let customBackAction {
+                    customBackAction()
+                } else {
+                    dismiss()
+                }
             } label: {
                 Text("저장하기")
                     .font(.headline)
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .frame(height: 56)
-                    .background(Color.blue)
+                    .background(viewModel.canSave ? Color.blue : Color.gray)
                     .clipShape(RoundedRectangle(cornerRadius: 20))
             }
+            .disabled(!viewModel.canSave)
             .padding(.horizontal, 20)
             .padding(.bottom, 6)
         }
@@ -83,5 +92,6 @@ struct RecordView: View {
         .background(Color(.systemGroupedBackground))
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
+        .ignoresSafeArea(.keyboard, edges: .bottom)
     }
 }

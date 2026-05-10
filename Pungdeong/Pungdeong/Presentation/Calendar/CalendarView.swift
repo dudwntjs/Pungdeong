@@ -113,6 +113,18 @@ struct CalendarView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         }
         .onAppear {
+            let manager = PungdeongLevelManager()
+
+            if let level = manager.todayLevel {
+                let record = DailyRecord(
+                    date: Date(),
+                    level: level,
+                    memo: ""
+                )
+
+                viewModel.saveRecord(record, context: modelContext)
+            }
+
             viewModel.loadSavedRecords(context: modelContext)
         }
     }

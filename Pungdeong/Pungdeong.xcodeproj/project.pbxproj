@@ -6,19 +6,91 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		A41A35742FA0725B00723398 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A41A35732FA0725B00723398 /* WidgetKit.framework */; };
+		A41A35762FA0725B00723398 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A41A35752FA0725B00723398 /* SwiftUI.framework */; };
+		A41A35872FA0725C00723398 /* PungdeongWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A41A35712FA0725B00723398 /* PungdeongWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A41A35852FA0725C00723398 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A442E2DF2F764F6200A74C2B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A41A35702FA0725B00723398;
+			remoteInfo = PungdeongWidgetExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		A41A35882FA0725C00723398 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				A41A35872FA0725C00723398 /* PungdeongWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		A41A35712FA0725B00723398 /* PungdeongWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PungdeongWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		A41A35732FA0725B00723398 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		A41A35752FA0725B00723398 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 		A442E2E72F764F6200A74C2B /* Pungdeong.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pungdeong.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		A41A358B2FA0725C00723398 /* Exceptions for "PungdeongWidget" folder in "PungdeongWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = A41A35702FA0725B00723398 /* PungdeongWidgetExtension */;
+		};
+		A48DCE5D2FA1C429002977C4 /* Exceptions for "Pungdeong" folder in "PungdeongWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"Data/Record/Persistence/Extension/Date+DayKey.swift",
+				Shared/PungdeongLevel.swift,
+				Shared/PungdeongLevelManager.swift,
+			);
+			target = A41A35702FA0725B00723398 /* PungdeongWidgetExtension */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		A41A35772FA0725B00723398 /* PungdeongWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				A41A358B2FA0725C00723398 /* Exceptions for "PungdeongWidget" folder in "PungdeongWidgetExtension" target */,
+			);
+			path = PungdeongWidget;
+			sourceTree = "<group>";
+		};
 		A442E2E92F764F6200A74C2B /* Pungdeong */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				A48DCE5D2FA1C429002977C4 /* Exceptions for "Pungdeong" folder in "PungdeongWidgetExtension" target */,
+			);
 			path = Pungdeong;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		A41A356E2FA0725B00723398 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A41A35762FA0725B00723398 /* SwiftUI.framework in Frameworks */,
+				A41A35742FA0725B00723398 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A442E2E42F764F6200A74C2B /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -29,10 +101,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A41A35722FA0725B00723398 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A41A35732FA0725B00723398 /* WidgetKit.framework */,
+				A41A35752FA0725B00723398 /* SwiftUI.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		A442E2DE2F764F6200A74C2B = {
 			isa = PBXGroup;
 			children = (
 				A442E2E92F764F6200A74C2B /* Pungdeong */,
+				A41A35772FA0725B00723398 /* PungdeongWidget */,
+				A41A35722FA0725B00723398 /* Frameworks */,
 				A442E2E82F764F6200A74C2B /* Products */,
 			);
 			sourceTree = "<group>";
@@ -41,6 +124,7 @@
 			isa = PBXGroup;
 			children = (
 				A442E2E72F764F6200A74C2B /* Pungdeong.app */,
+				A41A35712FA0725B00723398 /* PungdeongWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -48,6 +132,28 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		A41A35702FA0725B00723398 /* PungdeongWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A41A358C2FA0725C00723398 /* Build configuration list for PBXNativeTarget "PungdeongWidgetExtension" */;
+			buildPhases = (
+				A41A356D2FA0725B00723398 /* Sources */,
+				A41A356E2FA0725B00723398 /* Frameworks */,
+				A41A356F2FA0725B00723398 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				A41A35772FA0725B00723398 /* PungdeongWidget */,
+			);
+			name = PungdeongWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = PungdeongWidgetExtension;
+			productReference = A41A35712FA0725B00723398 /* PungdeongWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		A442E2E62F764F6200A74C2B /* Pungdeong */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = A442E2F22F764F6300A74C2B /* Build configuration list for PBXNativeTarget "Pungdeong" */;
@@ -55,10 +161,12 @@
 				A442E2E32F764F6200A74C2B /* Sources */,
 				A442E2E42F764F6200A74C2B /* Frameworks */,
 				A442E2E52F764F6200A74C2B /* Resources */,
+				A41A35882FA0725C00723398 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				A41A35862FA0725C00723398 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				A442E2E92F764F6200A74C2B /* Pungdeong */,
@@ -80,6 +188,9 @@
 				LastSwiftUpdateCheck = 2630;
 				LastUpgradeCheck = 2630;
 				TargetAttributes = {
+					A41A35702FA0725B00723398 = {
+						CreatedOnToolsVersion = 26.3;
+					};
 					A442E2E62F764F6200A74C2B = {
 						CreatedOnToolsVersion = 26.3;
 					};
@@ -100,11 +211,19 @@
 			projectRoot = "";
 			targets = (
 				A442E2E62F764F6200A74C2B /* Pungdeong */,
+				A41A35702FA0725B00723398 /* PungdeongWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		A41A356F2FA0725B00723398 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A442E2E52F764F6200A74C2B /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -115,6 +234,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		A41A356D2FA0725B00723398 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A442E2E32F764F6200A74C2B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -124,7 +250,80 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		A41A35862FA0725C00723398 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A41A35702FA0725B00723398 /* PungdeongWidgetExtension */;
+			targetProxy = A41A35852FA0725C00723398 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		A41A35892FA0725C00723398 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 6B47X24XTW;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PungdeongWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = PungdeongWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = sun.Pungdeong.PungdeongWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A41A358A2FA0725C00723398 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 6B47X24XTW;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PungdeongWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = PungdeongWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = sun.Pungdeong.PungdeongWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		A442E2F02F764F6300A74C2B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -334,6 +533,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		A41A358C2FA0725C00723398 /* Build configuration list for PBXNativeTarget "PungdeongWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A41A35892FA0725C00723398 /* Debug */,
+				A41A358A2FA0725C00723398 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		A442E2E22F764F6200A74C2B /* Build configuration list for PBXProject "Pungdeong" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

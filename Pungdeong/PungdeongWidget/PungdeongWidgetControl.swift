@@ -10,6 +10,9 @@ import SwiftUI
 import WidgetKit
 
 struct PungdeongWidgetControl: ControlWidget {
+    
+    @Environment(\.scenePhase) private var scenePhase
+    
     static let kind: String = "sun.Pungdeong.PungdeongLevelControl"
 
     var body: some ControlWidgetConfiguration {
@@ -19,7 +22,7 @@ struct PungdeongWidgetControl: ControlWidget {
                     Text("풍덩 레벨")
                 } icon: {
                     Image("custom.water.waves.circle")
-                        .symbolEffect(.breathe.pulse.byLayer, options: .nonRepeating)
+                        .symbolEffect(.bounce)
                 }
             }
         }

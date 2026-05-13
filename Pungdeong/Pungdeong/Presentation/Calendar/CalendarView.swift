@@ -10,6 +10,7 @@ import SwiftData
 
 struct CalendarView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.scenePhase) private var scenePhase
     @StateObject private var viewModel: CalendarViewModel
     @State private var goToRecord = false
     @State private var dragOffset: CGFloat = 0
@@ -157,8 +158,22 @@ struct CalendarView: View {
             .onAppear {
                 pageWidth = width
             }
-            .onChange(of: width) { _, newValue in
-                pageWidth = newValue
+            .onChange(of: scenePhase) { _, newPhase in
+                guard newPhase == .active else { return }
+
+                let manager = PungdeongLevelManager()
+
+                if let level = manager.todayLevel {
+                    let record = DailyRecord(
+                        date: Date(),
+                        level: level,
+                        memo: ""
+                    )
+
+                    viewModel.saveRecord(record, context: modelContext)
+                }
+
+                viewModel.loadSavedRecords(context: modelContext)
             }
             .gesture(
                 DragGesture()

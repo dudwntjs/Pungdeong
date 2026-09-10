@@ -48,6 +48,8 @@ struct RecordCardView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 20))
                 
                 RecordPhotoPickerSection(images: $record.images)
+
+                RecordMusicSection(song: $record.song)
                 
                 RecordMemoSection(
                     memo: record.memo,

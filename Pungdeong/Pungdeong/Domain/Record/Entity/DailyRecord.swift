@@ -16,6 +16,7 @@ struct DailyRecord: Identifiable, Equatable {
     var latitude: Double?
     var longitude: Double?
     var placeName: String?
+    var song: RecordSong?
 
     init(
         id: UUID = UUID(),
@@ -25,7 +26,8 @@ struct DailyRecord: Identifiable, Equatable {
         images: [UIImage] = [],
         latitude: Double? = nil,
         longitude: Double? = nil,
-        placeName: String? = nil
+        placeName: String? = nil,
+        song: RecordSong? = nil
     ) {
         self.id = id
         self.date = date
@@ -35,5 +37,6 @@ struct DailyRecord: Identifiable, Equatable {
         self.latitude = latitude
         self.longitude = longitude
         self.placeName = placeName
+        self.song = song
     }
 }

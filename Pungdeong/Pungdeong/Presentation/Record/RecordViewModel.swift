@@ -65,7 +65,8 @@ final class RecordViewModel: ObservableObject {
                         images: images,
                         latitude: entity.latitude,
                         longitude: entity.longitude,
-                        placeName: entity.placeName
+                        placeName: entity.placeName,
+                        song: entity.songData.flatMap { try? JSONDecoder().decode(RecordSong.self, from: $0) }
                     )
                 ]
 
@@ -98,6 +99,7 @@ final class RecordViewModel: ObservableObject {
         let imageDatas = record.images.compactMap { $0.toData() }
 
         do {
+            let songData = try record.song.map { try JSONEncoder().encode($0) }
             let predicate = #Predicate<DailyRecordEntity> { $0.dayKey == key }
             var descriptor = FetchDescriptor<DailyRecordEntity>(predicate: predicate)
             descriptor.fetchLimit = 1
@@ -110,6 +112,7 @@ final class RecordViewModel: ObservableObject {
                 entity.latitude = record.latitude
                 entity.longitude = record.longitude
                 entity.placeName = record.placeName
+                entity.songData = songData
             } else {
                 let entity = DailyRecordEntity(
                     dayKey: key,
@@ -119,7 +122,8 @@ final class RecordViewModel: ObservableObject {
                     imageDatas: imageDatas,
                     latitude: record.latitude,
                     longitude: record.longitude,
-                    placeName: record.placeName
+                    placeName: record.placeName,
+                    songData: songData
                 )
                 modelContext.insert(entity)
             }

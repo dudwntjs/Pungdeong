@@ -456,6 +456,7 @@
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "풍덩";
+				INFOPLIST_KEY_NSAppleMusicUsageDescription = "오늘 빠진 노래를 검색하고 기록에 추가하기 위해 Apple Music 접근이 필요해요.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "위치 정보 가져와야지";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
@@ -503,6 +504,7 @@
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "풍덩";
+				INFOPLIST_KEY_NSAppleMusicUsageDescription = "오늘 빠진 노래를 검색하고 기록에 추가하기 위해 Apple Music 접근이 필요해요.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "위치 정보 가져와야지";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;

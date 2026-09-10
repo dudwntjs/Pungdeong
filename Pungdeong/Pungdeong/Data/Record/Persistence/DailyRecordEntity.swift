@@ -18,6 +18,7 @@ final class DailyRecordEntity {
     var latitude: Double?
     var longitude: Double?
     var placeName: String?
+    var songData: Data?
 
     init(
         dayKey: String,
@@ -27,7 +28,8 @@ final class DailyRecordEntity {
         imageDatas: [Data] = [],
         latitude: Double? = nil,
         longitude: Double? = nil,
-        placeName: String? = nil
+        placeName: String? = nil,
+        songData: Data? = nil
     ) {
         self.dayKey = dayKey
         self.date = date
@@ -37,5 +39,6 @@ final class DailyRecordEntity {
         self.latitude = latitude
         self.longitude = longitude
         self.placeName = placeName
+        self.songData = songData
     }
 }
